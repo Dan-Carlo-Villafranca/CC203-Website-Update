@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget and Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>💰 Budget and Expense Tracker</h1>
+    </header>
+
+    <main>
+        <div class="summary-box">
+            <h2>Financial Summary</h2>
+            <p><strong>Net Balance:</strong> $<span id="netBalance">0.00</span></p>
+            <p><strong>Total Liabilities:</strong> $<span id="totalLiabilities">0.00</span></p>
+            <p><strong>Total Debts Owed TO YOU:</strong> $<span id="totalDebtsOwed">0.00</span></p>
+        </div>
+
+        <section class="tracker-section">
+            <h2>💸 Income</h2>
+            <div class="input-form">
+                <input type="text" id="incomeDesc" placeholder="Description (e.g., Salary)">
+                <input type="number" id="incomeAmount" placeholder="Amount ($)" min="0">
+                <button onclick="addItem('income')">Add Income</button>
+            </div>
+            <div class="item-list" id="incomeList">
+                </div>
+        </section>
+
+        <hr>
+
+        <section class="tracker-section">
+            <h2>🛍️ Expenses</h2>
+            <div class="input-form">
+                <input type="text" id="expenseDesc" placeholder="Description (e.g., Rent)">
+                <input type="number" id="expenseAmount" placeholder="Amount ($)" min="0">
+                <button onclick="addItem('expense')">Add Expense</button>
+            </div>
+            <div class="item-list" id="expenseList">
+                </div>
+        </section>
+
+        <hr>
+
+        <section class="tracker-section liability-section">
+            <h2>🏦 Liabilities (What You Owe)</h2>
+            <div class="input-form">
+                <input type="text" id="liabilityDesc" placeholder="Description (e.g., Credit Card)">
+                <input type="number" id="liabilityAmount" placeholder="Amount ($)" min="0">
+                <button onclick="addItem('liability')">Add Liability</button>
+            </div>
+            <div class="item-list" id="liabilityList">
+                </div>
+        </section>
+
+        <hr>
+
+        <section class="tracker-section debt-section">
+            <h2>🤝 Debts Owed To You (Assets)</h2>
+            <div class="input-form">
+                <input type="text" id="debtOwedDesc" placeholder="Payer (e.g., John Doe)">
+                <input type="number" id="debtOwedAmount" placeholder="Amount ($)" min="0">
+                <button onclick="addItem('debtOwed')">Add Debt Owed</button>
+            </div>
+            <div class="item-list" id="debtOwedList">
+                </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Simple Tracker</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
