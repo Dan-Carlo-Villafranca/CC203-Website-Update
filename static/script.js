@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to handle the ADD request
 async function addItem(type) {
-    let descInput, amountInput;
+    let descInput, amountInput, shareInput;
 
     switch(type) {
         case 'income':
@@ -41,6 +41,7 @@ async function addItem(type) {
         case 'expense':
             descInput = document.getElementById('expenseDesc');
             amountInput = document.getElementById('expenseAmount');
+            shareInput = document.getElementById('expenseShare');
             break;
         case 'liability':
             descInput = document.getElementById('liabilityDesc');
@@ -72,6 +73,7 @@ async function addItem(type) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+
             const entry = {
                 id: result.id,
                 description: result.description,
@@ -83,6 +85,59 @@ async function addItem(type) {
 
             descInput.value = '';
             amountInput.value = '';
+
+            // ----------------------------------------------------
+            // 🔹 SHARED EXPENSE FEATURE (Only activates for expenses)
+            // ----------------------------------------------------
+            if (type === 'expense') {
+                const shareInput = document.getElementById('expenseShare');
+                const rawFriends = shareInput.value.trim();
+
+                if (rawFriends !== "") {
+                    const friends = rawFriends
+                        .split(",")
+                        .map(f => f.trim())
+                        .filter(f => f.length > 0);
+
+                    if (friends.length > 0) {
+                        const totalPeople = friends.length + 1; // you + friends
+                        const shareAmount = entry.amount / totalPeople;
+
+                        // Create debtOwed entry for each friend
+                        for (const friend of friends) {
+                        const frResponse = await fetch('/add', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                type: 'debtOwed',
+                                description: `${friend} (Shared: ${entry.description})`,
+                                amount: shareAmount
+                            })
+                        });
+
+                        const frResult = await frResponse.json();
+
+                        if (frResponse.ok && frResult.success) {
+
+                            // Save to local memory
+                            const friendEntry = {
+                                id: frResult.id,
+                                description: frResult.description,
+                                amount: frResult.amount
+                            };
+
+                            entries.debtOwed.push(friendEntry);
+
+                            // Show on screen instantly
+                            renderNewItem(friendEntry, "debtOwed", "debtOwedList");
+                        }
+                    }
+                    }
+                }
+
+                // clear the sharing input
+                if (shareInput) shareInput.value = "";
+            }
 
             calculateTotals();
         } else {
@@ -144,6 +199,38 @@ function renderNewItem(entry, type, listId) {
     list.appendChild(newItem);
 }
 
+function updatePeopleWhoOweYou() {
+    const container = document.getElementById('peopleOweYou');
+    container.innerHTML = '';
+
+    const map = {};
+
+    entries.debtOwed.forEach(item => {
+        // Extract payer name from "Mark (Shared: Pizza)"
+        let name = item.description;
+        if (name.includes("(")) {
+            name = name.split("(")[0].trim();
+        }
+
+        if (!map[name]) map[name] = 0;
+        map[name] += item.amount;
+    });
+
+    // If empty
+    if (Object.keys(map).length === 0) {
+        container.innerHTML = "<p>No debts owed to you. 🎉</p>";
+        return;
+    }
+
+    // Populate grouped results
+    for (const [name, amount] of Object.entries(map)) {
+        const div = document.createElement('div');
+        div.classList.add('item');
+        div.innerHTML = `${name}: ₱${amount.toFixed(2)}`;
+        container.appendChild(div);
+    }
+}
+
 
 // Function to calculate all totals and update the Summary box
 function calculateTotals() {
@@ -157,4 +244,6 @@ function calculateTotals() {
     document.getElementById('totalLiabilities').textContent = totalLiabilities.toFixed(2);
     document.getElementById('totalDebtsOwed').textContent = totalDebtsOwed.toFixed(2);
     document.getElementById('netBalance').textContent = netBalance.toFixed(2);
+
+    updatePeopleWhoOweYou();
 }

@@ -37,6 +37,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     # Relationship to transactions: 'User' has many 'Transaction'
+
     transactions = db.relationship('Transaction', backref='owner', lazy=True)
 
     def __repr__(self):
@@ -112,10 +113,12 @@ def login():
         return redirect(url_for('index'))  # Redirect if already logged in
 
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('username')
         password = request.form.get('password')
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter(
+            (User.username == email) | (User.email == email)
+        ).first()
 
         # Verify email exists and password is correct
         if user and bcrypt.check_password_hash(user.password, password):

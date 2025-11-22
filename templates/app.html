@@ -54,6 +54,7 @@
             <div class="input-form">
                 <input type="text" id="expenseDesc" placeholder="Description (e.g., Rent)">
                 <input type="number" id="expenseAmount" placeholder="Amount (₱)" min="0">
+                <input type="text" id="expenseShare" placeholder="Share with (Joshu, David, Rai, Evran)">
                 <button onclick="addItem('expense')">Add Expense</button>
             </div>
             <div class="item-list" id="expenseList"></div>
@@ -75,6 +76,7 @@
 
         <section class="tracker-section debt-section">
             <h2>🤝 Debts Owed To You (Assets)</h2>
+
             <div class="input-form">
                 <input type="text" id="debtOwedDesc" placeholder="Payer (e.g., David Pomerance)">
                 <input type="number" id="debtOwedAmount" placeholder="Amount (₱)" min="0">
@@ -82,6 +84,12 @@
             </div>
             <div class="item-list" id="debtOwedList"></div>
         </section>
+        <hr>
+
+<section class="tracker-section">
+    <h2>📋 People Who Owe You</h2>
+    <div id="peopleOweYou"></div>
+</section>
     </main>
 
     <footer>
